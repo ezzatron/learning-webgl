@@ -150,12 +150,14 @@ async function main () {
 }
 
 function update_and_render (canvas, gl, pgm, state) {
-  const {width, height, clientWidth, clientHeight} = canvas;
+  const targetWidth = window.outerWidth;
+  const targetHeight = window.outerHeight;
+  const {width, height} = canvas;
 
-  if (width !== clientWidth || height !== clientHeight) {
-    canvas.width  = clientWidth;
-    canvas.height = clientHeight;
-    gl.viewport(0, 0, clientWidth, clientHeight);
+  if (width !== targetWidth || height !== targetHeight) {
+    canvas.width  = targetWidth;
+    canvas.height = targetHeight;
+    gl.viewport(0, 0, targetWidth, targetHeight);
   }
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
