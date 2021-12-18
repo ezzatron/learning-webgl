@@ -160,6 +160,7 @@ function update_and_render (canvas, gl, pgm, state) {
     gl.viewport(0, 0, targetWidth, targetHeight);
   }
 
+  gl.clearColor(...[100, 30, 20].map(channel => channel / 255), 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   const a = mtx_perspective(40, width / height, 0.1, 100.0);
