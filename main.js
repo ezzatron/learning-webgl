@@ -1,124 +1,13 @@
 // Original code by Apoorva Joshi (https://apoorvaj.io/exploring-bump-mapping-with-webgl/)
 
-if (document.readyState !== 'loading') {
-  main();
-} else {
-  document.addEventListener('DOMContentLoaded', main);
-}
+main().catch(error => {
+  console.error(error)
+})
 
-const vert_src = `
-precision highp float;
+async function main () {
+  const [frag_src, vert_src] = await Promise.all([loadFile('pom.frag'), loadFile('pom.vert')])
+  await domReady()
 
-attribute vec3 vert_pos;
-attribute vec3 vert_tang;
-attribute vec3 vert_bitang;
-attribute vec2 vert_uv;
-
-uniform mat4 model_mtx;
-uniform mat4 norm_mtx;
-uniform mat4 proj_mtx;
-
-varying vec2 frag_uv;
-varying vec3 ts_light_pos; // Tangent space values
-varying vec3 ts_view_pos;  //
-varying vec3 ts_frag_pos;  //
-
-mat3 transpose(in mat3 inMatrix)
-{
-  vec3 i0 = inMatrix[0];
-  vec3 i1 = inMatrix[1];
-  vec3 i2 = inMatrix[2];
-
-  mat3 outMatrix = mat3(
-    vec3(i0.x, i1.x, i2.x),
-    vec3(i0.y, i1.y, i2.y),
-    vec3(i0.z, i1.z, i2.z)
-  );
-
-  return outMatrix;
-}
-
-void main(void)
-{
-  gl_Position = proj_mtx * vec4(vert_pos, 1.0);
-  ts_frag_pos = vec3(model_mtx * vec4(vert_pos, 1.0));
-  vec3 vert_norm = cross(vert_bitang, vert_tang);
-
-  vec3 t = normalize(mat3(norm_mtx) * vert_tang);
-  vec3 b = normalize(mat3(norm_mtx) * vert_bitang);
-  vec3 n = normalize(mat3(norm_mtx) * vert_norm);
-  mat3 tbn = transpose(mat3(t, b, n));
-
-  vec3 light_pos = vec3(1, 2, 0);
-  ts_light_pos = tbn * light_pos;
-  // Our camera is always at the origin
-  ts_view_pos = tbn * vec3(0, 0, 0);
-  ts_frag_pos = tbn * ts_frag_pos;
-
-  frag_uv = vert_uv;
-}
-`;
-
-const frag_src = `
-precision highp float;
-
-uniform sampler2D tex_norm;
-uniform sampler2D tex_diffuse;
-uniform sampler2D tex_depth;
-float depth_scale = 0.1;
-float num_layers = 32.0;
-
-varying vec2 frag_uv;
-varying vec3 ts_light_pos;
-varying vec3 ts_view_pos;
-varying vec3 ts_frag_pos;
-
-vec2 parallax_uv(vec2 uv, vec3 view_dir)
-{
-  float layer_depth = 1.0 / num_layers;
-  float cur_layer_depth = 0.0;
-  vec2 delta_uv = view_dir.xy * depth_scale / (view_dir.z * num_layers);
-  vec2 cur_uv = uv;
-
-  float depth_from_tex = texture2D(tex_depth, cur_uv).r;
-
-  for (int i = 0; i < 32; i++) {
-    cur_layer_depth += layer_depth;
-    cur_uv -= delta_uv;
-    depth_from_tex = texture2D(tex_depth, cur_uv).r;
-    if (depth_from_tex < cur_layer_depth) {
-      break;
-    }
-  }
-
-  // Parallax occlusion mapping
-  vec2 prev_uv = cur_uv + delta_uv;
-  float next = depth_from_tex - cur_layer_depth;
-  float prev = texture2D(tex_depth, prev_uv).r - cur_layer_depth
-          + layer_depth;
-  float weight = next / (next - prev);
-  return mix(cur_uv, prev_uv, weight);
-}
-
-void main(void)
-{
-  vec3 light_dir = normalize(ts_light_pos - ts_frag_pos);
-  vec3 view_dir = normalize(ts_view_pos - ts_frag_pos);
-
-  // Only perturb the texture coordinates if a parallax technique is selected
-  vec2 uv = parallax_uv(frag_uv, view_dir);
-
-  vec3 albedo = texture2D(tex_diffuse, uv).rgb;
-  vec3 ambient = 0.3 * albedo;
-
-  // Normal mapping
-  vec3 norm = normalize(texture2D(tex_norm, uv).rgb * 2.0 - 1.0);
-  float diffuse = max(dot(light_dir, norm), 0.0);
-  gl_FragColor = vec4(diffuse * albedo + ambient, 1.0);
-}
-`;
-
-function main () {
   const canvas = document.getElementsByTagName("canvas")[0];
   const gl = canvas.getContext("webgl");
 
@@ -465,4 +354,22 @@ function mtx_perspective (fov_y, aspect, z_near, z_far) {
     A   , B   , C   , -1.0,
     0.0 , 0.0 , D   ,  0.0
   ];
+}
+
+function domReady () {
+  return new Promise(resolve => {
+    if (document.readyState !== 'loading') {
+      resolve();
+    } else {
+      document.addEventListener('DOMContentLoaded', resolve);
+    }
+  })
+}
+
+async function loadFile (url) {
+  const response = await fetch(url)
+
+  if (!response.ok) throw new Error(`Failed to load ${url}`)
+
+  return response.text()
 }
