@@ -35,6 +35,7 @@ vec2 parallax_uv(vec2 uv, vec3 view_dir)
   float next = depth_from_tex - cur_layer_depth;
   float prev = texture2D(tex_depth, prev_uv).r - cur_layer_depth + layer_depth;
   float weight = next / (next - prev);
+
   return mix(cur_uv, prev_uv, weight);
 }
 
