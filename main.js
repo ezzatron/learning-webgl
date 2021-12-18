@@ -47,7 +47,7 @@ async function main () {
   const vbo_pos = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo_pos);
 
-  const thickness = 0.1
+  const thickness = 0.006
 
   const verts = [
     // Front
