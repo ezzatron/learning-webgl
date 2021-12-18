@@ -192,19 +192,27 @@ async function main () {
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
 
-  const index_buffer = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+  const index_buffer_faces = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer_faces);
 
-  const indices = [
+  const indices_faces = [
     0,  1,  2,     0,  3,  1,  // Front
     4,  6,  5,     4,  5,  7,  // Back
+  ];
+
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices_faces), gl.STATIC_DRAW);
+
+  const index_buffer_edges = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer_edges);
+
+  const indices_edges = [
     8,  9,  10,    8,  11, 9,  // Right
     12, 14, 13,    12, 13, 15, // Left
     16, 18, 17,    16, 17, 19, // Top
     20, 21, 22,    20, 23, 21, // Bottom
   ];
 
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices_edges), gl.STATIC_DRAW);
 
   // Init textures
   const tex_depth = load_texture(gl, "bump_depth")
@@ -216,8 +224,10 @@ async function main () {
     attr_pos,
     attr_tang,
     attr_uv,
-    index_buffer,
-    indices,
+    index_buffer_edges,
+    index_buffer_faces,
+    indices_edges,
+    indices_faces,
     tex_depth,
     tex_diffuse,
     tex_norm,
@@ -287,8 +297,12 @@ function update_and_render (canvas, gl, pgm, state) {
   gl.vertexAttribPointer(state.attr_uv, 2, gl.FLOAT, false, 0, 0);
 
   gl.uniform1f(gl.getUniformLocation(pgm, "enabled"), 1);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, state.index_buffer);
-  gl.drawElements(gl.TRIANGLES, state.indices.length, gl.UNSIGNED_SHORT, 0);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, state.index_buffer_faces);
+  gl.drawElements(gl.TRIANGLES, state.indices_faces.length, gl.UNSIGNED_SHORT, 0);
+
+  gl.uniform1f(gl.getUniformLocation(pgm, "enabled"), 0);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, state.index_buffer_edges);
+  gl.drawElements(gl.TRIANGLES, state.indices_edges.length, gl.UNSIGNED_SHORT, 0);
 }
 
 function get_shader (gl, src, is_frag) {
