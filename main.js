@@ -261,7 +261,9 @@ function update_and_render (canvas, gl, pgm, state) {
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const a = mtx_perspective(40, width / height, 0.1, 100);
+  const aspect = width / height
+  const fov_y = aspect > 1 ? 40 : 40 - ((aspect - 1) * 40)
+  const a = mtx_perspective(fov_y, aspect, 0.1, 100);
   const b = mtx_translation(0, 0, -5.5);
   const c = mtx_rotation_x(0.5);
   const d = mtx_rotation_y(state.elapsed * 0.0005);
