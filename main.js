@@ -139,10 +139,18 @@ async function main () {
     vbo_uv,
   }
 
-  setInterval(update_and_render.bind(null, gl, pgm, state), 15);
+  setInterval(update_and_render.bind(null, canvas, gl, pgm, state), 15);
 }
 
-function update_and_render (gl, pgm, state) {
+function update_and_render (canvas, gl, pgm, state) {
+  const {width, height, clientWidth, clientHeight} = canvas;
+
+  if (width !== clientWidth || height !== clientHeight) {
+    canvas.width  = clientWidth;
+    canvas.height = clientHeight;
+    gl.viewport(0, 0, clientWidth, clientHeight);
+  }
+
   state.time++;
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
