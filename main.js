@@ -215,15 +215,17 @@ async function main () {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices_edges), gl.STATIC_DRAW);
 
   // Init textures
-  const tex_depth = load_texture(gl, "bump_depth")
-  const tex_diffuse = load_texture(gl, "bump_diffuse")
-  const tex_norm = load_texture(gl, "bump_normal")
+  const color_fallback = [254, 111, 48]
+  const tex_depth = load_texture(gl, color_fallback, "bump_depth")
+  const tex_diffuse = load_texture(gl, color_fallback, "bump_diffuse")
+  const tex_norm = load_texture(gl, color_fallback, "bump_normal")
 
   const state = {
     attr_bitang,
     attr_pos,
     attr_tang,
     attr_uv,
+    color_fallback,
     index_buffer_edges,
     index_buffer_faces,
     indices_edges,
@@ -324,11 +326,12 @@ function get_shader (gl, src, is_frag) {
   return shader;
 }
 
-function load_texture (gl, id) {
+function load_texture (gl, color_fallback, id) {
+  const color = new Uint8Array([...color_fallback, 255])
   const tex = gl.createTexture();
 
   gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 0, 255])); // red
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, color);
 
   const img = new Image();
 
