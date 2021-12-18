@@ -6,7 +6,7 @@ if (document.readyState !== 'loading') {
   document.addEventListener('DOMContentLoaded', main);
 }
 
-var vert_src = `
+const vert_src = `
 precision highp float;
 
 attribute vec3 vert_pos;
@@ -59,7 +59,7 @@ void main(void)
 }
 `;
 
-var frag_src = `
+const frag_src = `
 precision highp float;
 
 uniform sampler2D tex_norm;
@@ -130,8 +130,8 @@ function main () {
   gl.enable(gl.CULL_FACE);
 
   // Init shaders
-  var frag = get_shader(gl, frag_src, true);
-  var vert = get_shader(gl, vert_src, false);
+  const frag = get_shader(gl, frag_src, true);
+  const vert = get_shader(gl, vert_src, false);
   const pgm = gl.createProgram();
   gl.attachShader(pgm, vert);
   gl.attachShader(pgm, frag);
@@ -158,7 +158,7 @@ function main () {
   const vbo_pos = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo_pos);
 
-  var verts = [
+  const verts = [
     -1, -1,  1,   1,  1,  1,  -1,  1,  1,   1, -1,  1, // Front
     -1, -1, -1,   1,  1, -1,  -1,  1, -1,   1, -1, -1, // Back
      1, -1, -1,   1,  1,  1,   1, -1,  1,   1,  1, -1, // Right
@@ -173,7 +173,7 @@ function main () {
   const vbo_tang = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo_tang);
 
-  var tangs = [
+  const tangs = [
      1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Front
     -1,  0,  0,  -1,  0,  0,  -1,  0,  0,  -1,  0,  0, // Back
      0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1, // Right
@@ -188,7 +188,7 @@ function main () {
   const vbo_bitang = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo_bitang);
 
-  var bitangs = [
+  const bitangs = [
     0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Front
     0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Back
     0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Right
@@ -203,7 +203,7 @@ function main () {
   const vbo_uv = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo_uv);
 
-  var uvs = [
+  const uvs = [
     0,  1,  1,  0,  0,  0,  1,  1, // Front
     1,  1,  0,  0,  1,  0,  0,  1, // Back
     1,  1,  0,  0,  0,  1,  1,  0, // Right
@@ -217,7 +217,7 @@ function main () {
   const index_buffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
 
-  var indices = [
+  const indices = [
     0 , 1 , 2 ,    0 , 3 , 1 , // Front
     4 , 6 , 5 ,    4 , 5 , 7 , // Back
     8 , 9 , 10,    8 , 11, 9 , // Right
@@ -258,12 +258,12 @@ function update_and_render (gl, pgm, state) {
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  var a = mtx_perspective(45, 680.0/382.0, 0.1, 100.0);
-  var b = mtx_translation(0,0,-4.5);
-  var c = mtx_rotation_x(0.4);
-  var d = mtx_rotation_y(state.time * 0.0075);
+  const a = mtx_perspective(45, 680.0/382.0, 0.1, 100.0);
+  const b = mtx_translation(0,0,-4.5);
+  const c = mtx_rotation_x(0.4);
+  const d = mtx_rotation_y(state.time * 0.0075);
 
-  var model = mtx_mul(mtx_mul(b, c), d);
+  const model = mtx_mul(mtx_mul(b, c), d);
 
   gl.uniformMatrix4fv(gl.getUniformLocation(pgm, "model_mtx"), false, model);
   gl.uniformMatrix4fv(gl.getUniformLocation(pgm, "norm_mtx"), false, mtx_transpose(mtx_inverse(model)));
@@ -298,7 +298,7 @@ function update_and_render (gl, pgm, state) {
 }
 
 function get_shader (gl, src, is_frag) {
-  var shader = gl.createShader(is_frag ? gl.FRAGMENT_SHADER : gl.VERTEX_SHADER);
+  const shader = gl.createShader(is_frag ? gl.FRAGMENT_SHADER : gl.VERTEX_SHADER);
 
   gl.shaderSource(shader, src);
   gl.compileShader(shader);
@@ -313,12 +313,12 @@ function get_shader (gl, src, is_frag) {
 }
 
 function load_texture (gl, img_path) {
-  var tex = gl.createTexture();
+  const tex = gl.createTexture();
 
   gl.bindTexture(gl.TEXTURE_2D, tex);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 0, 255])); // red
 
-  var img = new Image();
+  const img = new Image();
 
   img.onload = function () {
     gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -357,11 +357,11 @@ function mtx_identity () {
 }
 
 function mtx_mul (a, b) {
-  var c = mtx_zero();
+  const c = mtx_zero();
 
-  for (var i = 0; i < 4; i++) {
-    for (var j = 0; j < 4; j++) {
-      for (var k = 0; k < 4; k++) {
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      for (let k = 0; k < 4; k++) {
         c[i + j*4] += a[i + k*4] * b[k + j*4];
       }
     }
@@ -371,10 +371,10 @@ function mtx_mul (a, b) {
 }
 
 function mtx_transpose (a) {
-  var b = mtx_zero();
+  const b = mtx_zero();
 
-  for (var i = 0; i < 4; i++) {
-    for (var j = 0; j < 4; j++) {
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
       b[i + j*4] = a[j + i*4];
     }
   }
@@ -383,7 +383,7 @@ function mtx_transpose (a) {
 }
 
 function mtx_inverse (m) {
-  var inv = mtx_zero();
+  const inv = mtx_zero();
 
   inv[0]  =  m[5] * m[10] * m[15] - m[5]  * m[11] * m[14] - m[9]  * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
   inv[4]  = -m[4] * m[10] * m[15] + m[4]  * m[11] * m[14] + m[8]  * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10];
@@ -412,7 +412,7 @@ function mtx_inverse (m) {
 
   det = 1.0 / det;
 
-  for (var i = 0; i < 16; i++) {
+  for (let i = 0; i < 16; i++) {
     inv[i] *= det;
   }
 
@@ -447,17 +447,17 @@ function mtx_rotation_y (r) {
 }
 
 function mtx_perspective (fov_y, aspect, z_near, z_far) {
-  var top = z_near * Math.tan(fov_y * Math.PI / 360.0);
-  var bot = -top;
-  var left = bot * aspect;
-  var right = top * aspect;
+  const top = z_near * Math.tan(fov_y * Math.PI / 360.0);
+  const bot = -top;
+  const left = bot * aspect;
+  const right = top * aspect;
 
-  var X = 2 * z_near / (right - left);
-  var Y = 2 * z_near / (top - bot);
-  var A = (right + left) / (right - left);
-  var B = (top + bot) / (top - bot);
-  var C = -(z_far + z_near) / (z_far - z_near);
-  var D = -2 * z_far * z_near / (z_far - z_near);
+  const X = 2 * z_near / (right - left);
+  const Y = 2 * z_near / (top - bot);
+  const A = (right + left) / (right - left);
+  const B = (top + bot) / (top - bot);
+  const C = -(z_far + z_near) / (z_far - z_near);
+  const D = -2 * z_far * z_near / (z_far - z_near);
 
   return [
     X   , 0.0 , 0.0 ,  0.0,
