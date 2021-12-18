@@ -2,7 +2,6 @@
 
 var canvas;
 var gl;
-var time_paused = false;
 var time;
 
 var vbo_pos, attr_pos;
@@ -130,9 +129,6 @@ void main(void)
 
 window.onload = function(e) {
     canvas = document.getElementById("gl_canvas");
-    canvas.onclick = function(e) {
-        time_paused = !time_paused;
-    }
 
     // Init WebGL context
     {
@@ -261,9 +257,7 @@ window.onload = function(e) {
 }
 
 function update_and_render() {
-    if (!time_paused) {
-        time++;
-    }
+    time++;
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
