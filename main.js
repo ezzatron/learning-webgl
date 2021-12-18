@@ -12,7 +12,7 @@ async function main () {
   const gl = canvas.getContext("webgl");
 
   // Init GL flags
-  gl.clearColor(...[100, 30, 20].map(channel => channel / 255), 1);
+  gl.clearColor(...[0, 0, 0].map(channel => channel / 255), 1);
   gl.clearDepth(1);
   gl.enable(gl.DEPTH_TEST);
   gl.depthFunc(gl.LEQUAL);
@@ -267,6 +267,8 @@ function update_and_render (canvas, gl, pgm, state) {
   const d = mtx_rotation_y(state.elapsed * 0.0005);
 
   const model = mtx_mul(mtx_mul(b, c), d);
+
+  gl.uniform3fv(gl.getUniformLocation(pgm, "color_fallback"), [254, 111, 48].map(channel => channel / 255));
 
   gl.uniformMatrix4fv(gl.getUniformLocation(pgm, "model_mtx"), false, model);
   gl.uniformMatrix4fv(gl.getUniformLocation(pgm, "norm_mtx"), false, mtx_transpose(mtx_inverse(model)));
