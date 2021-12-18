@@ -6,17 +6,6 @@ if (document.readyState !== 'loading') {
   document.addEventListener('DOMContentLoaded', main);
 }
 
-var time;
-
-var vbo_pos, attr_pos;
-var vbo_tang, attr_tang;
-var vbo_bitang, attr_bitang;
-var vbo_uv, attr_uv;
-var index_buffer;
-var num_indices;
-var tex_norm, tex_diffuse, tex_depth;
-var pgm;
-
 var vert_src = `
 precision highp float;
 
@@ -134,137 +123,145 @@ function main () {
   const gl = canvas.getContext("webgl");
 
   // Init GL flags
-  {
-    gl.clearColor(1.0,1.0,1.0,1.0);
-    gl.clearDepth(1.0);
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
-    gl.enable(gl.CULL_FACE);
-  }
+  gl.clearColor(1.0,1.0,1.0,1.0);
+  gl.clearDepth(1.0);
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
+  gl.enable(gl.CULL_FACE);
 
   // Init shaders
-  {
-    var frag = get_shader(gl, frag_src, true);
-    var vert = get_shader(gl, vert_src, false);
-    pgm = gl.createProgram();
-    gl.attachShader(pgm, vert);
-    gl.attachShader(pgm, frag);
-    gl.linkProgram(pgm);
+  var frag = get_shader(gl, frag_src, true);
+  var vert = get_shader(gl, vert_src, false);
+  const pgm = gl.createProgram();
+  gl.attachShader(pgm, vert);
+  gl.attachShader(pgm, frag);
+  gl.linkProgram(pgm);
 
-    if (!gl.getProgramParameter(pgm, gl.LINK_STATUS)) {
-      alert("Unable to initialize the shader program: " +
-          gl.getProgramInfoLog(shader));
-    }
-
-    gl.useProgram(pgm);
-    attr_pos = gl.getAttribLocation(pgm, "vert_pos");
-    gl.enableVertexAttribArray(attr_pos);
-    attr_tang = gl.getAttribLocation(pgm, "vert_tang");
-    gl.enableVertexAttribArray(attr_tang);
-    attr_bitang = gl.getAttribLocation(pgm, "vert_bitang");
-    gl.enableVertexAttribArray(attr_bitang);
-    attr_uv = gl.getAttribLocation(pgm, "vert_uv");
-    gl.enableVertexAttribArray(attr_uv);
+  if (!gl.getProgramParameter(pgm, gl.LINK_STATUS)) {
+    alert("Unable to initialize the shader program: " +
+        gl.getProgramInfoLog(shader));
   }
+
+  gl.useProgram(pgm);
+  const attr_pos = gl.getAttribLocation(pgm, "vert_pos");
+  gl.enableVertexAttribArray(attr_pos);
+  const attr_tang = gl.getAttribLocation(pgm, "vert_tang");
+  gl.enableVertexAttribArray(attr_tang);
+  const attr_bitang = gl.getAttribLocation(pgm, "vert_bitang");
+  gl.enableVertexAttribArray(attr_bitang);
+  const attr_uv = gl.getAttribLocation(pgm, "vert_uv");
+  gl.enableVertexAttribArray(attr_uv);
 
   // Init meshes
-  {
-    // Positions
-    vbo_pos = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_pos);
 
-    var verts = [
-      -1, -1,  1,   1,  1,  1,  -1,  1,  1,   1, -1,  1, // Front
-      -1, -1, -1,   1,  1, -1,  -1,  1, -1,   1, -1, -1, // Back
-       1, -1, -1,   1,  1,  1,   1, -1,  1,   1,  1, -1, // Right
-      -1, -1, -1,  -1,  1,  1,  -1, -1,  1,  -1,  1, -1, // Left
-      -1,  1, -1,   1,  1,  1,  -1,  1,  1,   1,  1, -1, // Top
-      -1, -1, -1,   1, -1,  1,  -1, -1,  1,   1, -1, -1, // Bottom
-    ];
+  // Positions
+  const vbo_pos = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo_pos);
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+  var verts = [
+    -1, -1,  1,   1,  1,  1,  -1,  1,  1,   1, -1,  1, // Front
+    -1, -1, -1,   1,  1, -1,  -1,  1, -1,   1, -1, -1, // Back
+     1, -1, -1,   1,  1,  1,   1, -1,  1,   1,  1, -1, // Right
+    -1, -1, -1,  -1,  1,  1,  -1, -1,  1,  -1,  1, -1, // Left
+    -1,  1, -1,   1,  1,  1,  -1,  1,  1,   1,  1, -1, // Top
+    -1, -1, -1,   1, -1,  1,  -1, -1,  1,   1, -1, -1, // Bottom
+  ];
 
-    // Tangents
-    vbo_tang = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_tang);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
-    var tangs = [
-       1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Front
-      -1,  0,  0,  -1,  0,  0,  -1,  0,  0,  -1,  0,  0, // Back
-       0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1, // Right
-       0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1, // Left
-       1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Top
-       1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Bottom
-    ];
+  // Tangents
+  const vbo_tang = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo_tang);
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tangs), gl.STATIC_DRAW);
+  var tangs = [
+     1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Front
+    -1,  0,  0,  -1,  0,  0,  -1,  0,  0,  -1,  0,  0, // Back
+     0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1, // Right
+     0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1, // Left
+     1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Top
+     1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Bottom
+  ];
 
-    // Bitangents
-    vbo_bitang = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_bitang);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tangs), gl.STATIC_DRAW);
 
-    var bitangs = [
-       0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Front
-       0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Back
-       0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Right
-       0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Left
-       0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1, // Top
-       0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1, // Bot
-    ];
+  // Bitangents
+  const vbo_bitang = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo_bitang);
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bitangs), gl.STATIC_DRAW);
+  var bitangs = [
+    0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Front
+    0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Back
+    0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Right
+    0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Left
+    0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1, // Top
+    0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1, // Bot
+  ];
 
-    // UVs
-    vbo_uv = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_uv);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bitangs), gl.STATIC_DRAW);
 
-    var uvs = [
-       0,  1,  1,  0,  0,  0,  1,  1, // Front
-       1,  1,  0,  0,  1,  0,  0,  1, // Back
-       1,  1,  0,  0,  0,  1,  1,  0, // Right
-       0,  1,  1,  0,  1,  1,  0,  0, // Left
-       0,  0,  1,  1,  0,  1,  1,  0, // Top
-       0,  1,  1,  0,  0,  0,  1,  1, // Bottom
-    ];
+  // UVs
+  const vbo_uv = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo_uv);
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
+  var uvs = [
+    0,  1,  1,  0,  0,  0,  1,  1, // Front
+    1,  1,  0,  0,  1,  0,  0,  1, // Back
+    1,  1,  0,  0,  0,  1,  1,  0, // Right
+    0,  1,  1,  0,  1,  1,  0,  0, // Left
+    0,  0,  1,  1,  0,  1,  1,  0, // Top
+    0,  1,  1,  0,  0,  0,  1,  1, // Bottom
+  ];
 
-    index_buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvs), gl.STATIC_DRAW);
 
-    var indices = [
-      0 , 1 , 2 ,    0 , 3 , 1 , // Front
-      4 , 6 , 5 ,    4 , 5 , 7 , // Back
-      8 , 9 , 10,    8 , 11, 9 , // Right
-      12, 14, 13,    12, 13, 15, // Left
-      16, 18, 17,    16, 17, 19, // Top
-      20, 21, 22,    20, 23, 21, // Bottom
-    ];
+  const index_buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
 
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-    num_indices = indices.length;
-  }
+  var indices = [
+    0 , 1 , 2 ,    0 , 3 , 1 , // Front
+    4 , 6 , 5 ,    4 , 5 , 7 , // Back
+    8 , 9 , 10,    8 , 11, 9 , // Right
+    12, 14, 13,    12, 13, 15, // Left
+    16, 18, 17,    16, 17, 19, // Top
+    20, 21, 22,    20, 23, 21, // Bottom
+  ];
+
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
   // Init textures
-  {
-    tex_norm = load_texture(gl, "../bump_normal.png");
-    tex_diffuse = load_texture(gl, "../bump_diffuse.png");
-    tex_depth = load_texture(gl, "../bump_depth.png");
+  const tex_depth = load_texture(gl, "../bump_depth.png")
+  const tex_diffuse = load_texture(gl, "../bump_diffuse.png")
+  const tex_norm = load_texture(gl, "../bump_normal.png")
+
+  const state = {
+    attr_bitang,
+    attr_pos,
+    attr_tang,
+    attr_uv,
+    index_buffer,
+    indices,
+    tex_depth,
+    tex_diffuse,
+    tex_norm,
+    time: 0,
+    vbo_bitang,
+    vbo_pos,
+    vbo_tang,
+    vbo_uv,
   }
 
-  time = 0;
-  setInterval(update_and_render.bind(null, gl), 15);
+  setInterval(update_and_render.bind(null, gl, pgm, state), 15);
 }
 
-function update_and_render (gl) {
-  time++;
+function update_and_render (gl, pgm, state) {
+  state.time++;
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   var a = mtx_perspective(45, 680.0/382.0, 0.1, 100.0);
   var b = mtx_translation(0,0,-4.5);
   var c = mtx_rotation_x(0.4);
-  var d = mtx_rotation_y(time * 0.0075);
+  var d = mtx_rotation_y(state.time * 0.0075);
 
   var model = mtx_mul(mtx_mul(b, c), d);
 
@@ -273,31 +270,31 @@ function update_and_render (gl) {
   gl.uniformMatrix4fv(gl.getUniformLocation(pgm, "proj_mtx"), false, mtx_mul(a, model));
 
   gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, tex_norm);
+  gl.bindTexture(gl.TEXTURE_2D, state.tex_norm);
   gl.uniform1i(gl.getUniformLocation(pgm, "tex_norm"), 0);
 
   gl.activeTexture(gl.TEXTURE1);
-  gl.bindTexture(gl.TEXTURE_2D, tex_diffuse);
+  gl.bindTexture(gl.TEXTURE_2D, state.tex_diffuse);
   gl.uniform1i(gl.getUniformLocation(pgm, "tex_diffuse"), 1);
 
   gl.activeTexture(gl.TEXTURE2);
-  gl.bindTexture(gl.TEXTURE_2D, tex_depth);
+  gl.bindTexture(gl.TEXTURE_2D, state.tex_depth);
   gl.uniform1i(gl.getUniformLocation(pgm, "tex_depth"), 2);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, vbo_pos);
-  gl.vertexAttribPointer(attr_pos, 3, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, state.vbo_pos);
+  gl.vertexAttribPointer(state.attr_pos, 3, gl.FLOAT, false, 0, 0);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, vbo_tang);
-  gl.vertexAttribPointer(attr_tang, 3, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, state.vbo_tang);
+  gl.vertexAttribPointer(state.attr_tang, 3, gl.FLOAT, false, 0, 0);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, vbo_bitang);
-  gl.vertexAttribPointer(attr_bitang, 3, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, state.vbo_bitang);
+  gl.vertexAttribPointer(state.attr_bitang, 3, gl.FLOAT, false, 0, 0);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, vbo_uv);
-  gl.vertexAttribPointer(attr_uv, 2, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, state.vbo_uv);
+  gl.vertexAttribPointer(state.attr_uv, 2, gl.FLOAT, false, 0, 0);
 
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
-  gl.drawElements(gl.TRIANGLES, num_indices, gl.UNSIGNED_SHORT, 0);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, state.index_buffer);
+  gl.drawElements(gl.TRIANGLES, state.indices.length, gl.UNSIGNED_SHORT, 0);
 }
 
 function get_shader (gl, src, is_frag) {
