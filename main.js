@@ -1,6 +1,5 @@
 // Original code by Apoorva Joshi (https://apoorvaj.io/exploring-bump-mapping-with-webgl/)
 
-var gl;
 var time;
 
 var vbo_pos, attr_pos;
@@ -126,7 +125,7 @@ void main(void)
 
 window.onload = function (e) {
   const canvas = document.getElementsByTagName("canvas")[0];
-  gl = canvas.getContext("webgl");
+  const gl = canvas.getContext("webgl");
 
   // Init GL flags
   {
@@ -242,16 +241,16 @@ window.onload = function (e) {
 
   // Init textures
   {
-    tex_norm = load_texture("../bump_normal.png");
-    tex_diffuse = load_texture("../bump_diffuse.png");
-    tex_depth = load_texture("../bump_depth.png");
+    tex_norm = load_texture(gl, "../bump_normal.png");
+    tex_diffuse = load_texture(gl, "../bump_diffuse.png");
+    tex_depth = load_texture(gl, "../bump_depth.png");
   }
 
   time = 0;
-  setInterval(update_and_render, 15);
+  setInterval(update_and_render.bind(null, gl), 15);
 }
 
-function update_and_render () {
+function update_and_render (gl) {
   time++;
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -310,7 +309,7 @@ function get_shader (gl, src, is_frag) {
   return shader;
 }
 
-function load_texture (img_path) {
+function load_texture (gl, img_path) {
   var tex = gl.createTexture();
 
   gl.bindTexture(gl.TEXTURE_2D, tex);
