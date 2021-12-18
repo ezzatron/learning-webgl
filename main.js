@@ -1,6 +1,5 @@
 // Original code by Apoorva Joshi (https://apoorvaj.io/exploring-bump-mapping-with-webgl/)
 
-var canvas;
 var gl;
 var time;
 
@@ -72,9 +71,8 @@ precision highp float;
 uniform sampler2D tex_norm;
 uniform sampler2D tex_diffuse;
 uniform sampler2D tex_depth;
-uniform int show_tex;
-uniform float depth_scale;
-uniform float num_layers;
+float depth_scale = 0.1;
+float num_layers = 32.0;
 
 varying vec2 frag_uv;
 varying vec3 ts_light_pos;
@@ -117,7 +115,6 @@ void main(void)
   vec2 uv = parallax_uv(frag_uv, view_dir);
 
   vec3 albedo = texture2D(tex_diffuse, uv).rgb;
-  if (show_tex == 0) { albedo = vec3(1,1,1); }
   vec3 ambient = 0.3 * albedo;
 
   // Normal mapping
@@ -128,22 +125,8 @@ void main(void)
 `;
 
 window.onload = function (e) {
-  canvas = document.getElementsByTagName("canvas")[0];
-
-  // Init WebGL context
-  {
-    gl = null;
-
-    try {
-      gl = canvas.getContext("webgl");
-    } catch (e) {}
-  }
-
-  if (!gl) {
-    alert("Unable to initialize WebGL. Your browser may not support it.");
-
-    return;
-  }
+  const canvas = document.getElementsByTagName("canvas")[0];
+  gl = canvas.getContext("webgl");
 
   // Init GL flags
   {
@@ -280,59 +263,21 @@ function update_and_render () {
 
   var model = mtx_mul(mtx_mul(b, c), d);
 
-  {
-    var uni = gl.getUniformLocation(pgm, "model_mtx");
-    gl.uniformMatrix4fv(uni, false, model);
-  }
+  gl.uniformMatrix4fv(gl.getUniformLocation(pgm, "model_mtx"), false, model);
+  gl.uniformMatrix4fv(gl.getUniformLocation(pgm, "norm_mtx"), false, mtx_transpose(mtx_inverse(model)));
+  gl.uniformMatrix4fv(gl.getUniformLocation(pgm, "proj_mtx"), false, mtx_mul(a, model));
 
-  {
-    var uni = gl.getUniformLocation(pgm, "norm_mtx");
-    gl.uniformMatrix4fv(uni, false, mtx_transpose(mtx_inverse(model)));
-  }
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, tex_norm);
+  gl.uniform1i(gl.getUniformLocation(pgm, "tex_norm"), 0);
 
-  {
-    var uni = gl.getUniformLocation(pgm, "proj_mtx");
-    gl.uniformMatrix4fv(uni, false, mtx_mul(a, model));
-  }
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, tex_diffuse);
+  gl.uniform1i(gl.getUniformLocation(pgm, "tex_diffuse"), 1);
 
-  {
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, tex_norm);
-    var uni = gl.getUniformLocation(pgm, "tex_norm");
-    gl.uniform1i(uni, 0);
-  }
-
-  {
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, tex_diffuse);
-    var uni = gl.getUniformLocation(pgm, "tex_diffuse");
-    gl.uniform1i(uni, 1);
-  }
-
-  {
-    gl.activeTexture(gl.TEXTURE2);
-    gl.bindTexture(gl.TEXTURE_2D, tex_depth);
-    var uni = gl.getUniformLocation(pgm, "tex_depth");
-    gl.uniform1i(uni, 2);
-  }
-
-  {
-    var scale = 0.1;
-    var uni = gl.getUniformLocation(pgm, "depth_scale");
-    gl.uniform1f(uni, scale);
-  }
-
-  {
-    var steps = 32;
-    var uni = gl.getUniformLocation(pgm, "num_layers");
-    gl.uniform1f(uni, steps);
-  }
-
-  {
-    var show_tex = true;
-    var uni = gl.getUniformLocation(pgm, "show_tex");
-    gl.uniform1i(uni, show_tex);
-  }
+  gl.activeTexture(gl.TEXTURE2);
+  gl.bindTexture(gl.TEXTURE_2D, tex_depth);
+  gl.uniform1i(gl.getUniformLocation(pgm, "tex_depth"), 2);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo_pos);
   gl.vertexAttribPointer(attr_pos, 3, gl.FLOAT, false, 0, 0);
