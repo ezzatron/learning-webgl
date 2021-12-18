@@ -12,8 +12,8 @@ async function main () {
   const gl = canvas.getContext("webgl");
 
   // Init GL flags
-  gl.clearColor(1.0,1.0,1.0,1.0);
-  gl.clearDepth(1.0);
+  gl.clearColor(...[100, 30, 20].map(channel => channel / 255), 1);
+  gl.clearDepth(1);
   gl.enable(gl.DEPTH_TEST);
   gl.depthFunc(gl.LEQUAL);
   gl.enable(gl.CULL_FACE);
@@ -48,12 +48,41 @@ async function main () {
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo_pos);
 
   const verts = [
-    -1, -1,  1,   1,  1,  1,  -1,  1,  1,   1, -1,  1, // Front
-    -1, -1, -1,   1,  1, -1,  -1,  1, -1,   1, -1, -1, // Back
-     1, -1, -1,   1,  1,  1,   1, -1,  1,   1,  1, -1, // Right
-    -1, -1, -1,  -1,  1,  1,  -1, -1,  1,  -1,  1, -1, // Left
-    -1,  1, -1,   1,  1,  1,  -1,  1,  1,   1,  1, -1, // Top
-    -1, -1, -1,   1, -1,  1,  -1, -1,  1,   1, -1, -1, // Bottom
+    // Front
+    -1, -1,  1,
+     1,  1,  1,
+    -1,  1,  1,
+     1, -1,  1,
+
+    // Back
+    -1, -1, -1,
+     1,  1, -1,
+    -1,  1, -1,
+     1, -1, -1,
+
+    // Right
+     1, -1, -1,
+     1,  1,  1,
+     1, -1,  1,
+     1,  1, -1,
+
+    // Left
+    -1, -1, -1,
+    -1,  1,  1,
+    -1, -1,  1,
+    -1,  1, -1,
+
+    // Top
+    -1,  1, -1,
+     1,  1,  1,
+    -1,  1,  1,
+     1,  1, -1,
+
+    // Bottom
+    -1, -1, -1,
+     1, -1,  1,
+    -1, -1,  1,
+     1, -1, -1,
   ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
@@ -63,12 +92,41 @@ async function main () {
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo_tang);
 
   const tangs = [
-     1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Front
-    -1,  0,  0,  -1,  0,  0,  -1,  0,  0,  -1,  0,  0, // Back
-     0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1, // Right
-     0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1, // Left
-     1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Top
-     1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0, // Bottom
+    // Front
+     1,  0,  0,
+     1,  0,  0,
+     1,  0,  0,
+     1,  0,  0,
+
+    // Back
+    -1,  0,  0,
+    -1,  0,  0,
+    -1,  0,  0,
+    -1,  0,  0,
+
+    // Right
+     0,  0, -1,
+     0,  0, -1,
+     0,  0, -1,
+     0,  0, -1,
+
+    // Left
+     0,  0,  1,
+     0,  0,  1,
+     0,  0,  1,
+     0,  0,  1,
+
+    // Top
+     1,  0,  0,
+     1,  0,  0,
+     1,  0,  0,
+     1,  0,  0,
+
+    // Bottom
+     1,  0,  0,
+     1,  0,  0,
+     1,  0,  0,
+     1,  0,  0,
   ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tangs), gl.STATIC_DRAW);
@@ -78,12 +136,41 @@ async function main () {
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo_bitang);
 
   const bitangs = [
-    0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Front
-    0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Back
-    0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Right
-    0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0, // Left
-    0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1, // Top
-    0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1, // Bot
+    // Front
+    0, -1,  0,
+    0, -1,  0,
+    0, -1,  0,
+    0, -1,  0,
+
+    // Back
+    0, -1,  0,
+    0, -1,  0,
+    0, -1,  0,
+    0, -1,  0,
+
+    // Right
+    0, -1,  0,
+    0, -1,  0,
+    0, -1,  0,
+    0, -1,  0,
+
+    // Left
+    0, -1,  0,
+    0, -1,  0,
+    0, -1,  0,
+    0, -1,  0,
+
+    // Top
+    0,  0,  1,
+    0,  0,  1,
+    0,  0,  1,
+    0,  0,  1,
+
+    // Bottom
+    0,  0, -1,
+    0,  0, -1,
+    0,  0, -1,
+    0,  0, -1,
   ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bitangs), gl.STATIC_DRAW);
@@ -107,9 +194,9 @@ async function main () {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
 
   const indices = [
-    0 , 1 , 2 ,    0 , 3 , 1 , // Front
-    4 , 6 , 5 ,    4 , 5 , 7 , // Back
-    8 , 9 , 10,    8 , 11, 9 , // Right
+    0,  1,  2,     0,  3,  1,  // Front
+    4,  6,  5,     4,  5,  7,  // Back
+    8,  9,  10,    8,  11, 9,  // Right
     12, 14, 13,    12, 13, 15, // Left
     16, 18, 17,    16, 17, 19, // Top
     20, 21, 22,    20, 23, 21, // Bottom
@@ -160,10 +247,9 @@ function update_and_render (canvas, gl, pgm, state) {
     gl.viewport(0, 0, targetWidth, targetHeight);
   }
 
-  gl.clearColor(...[100, 30, 20].map(channel => channel / 255), 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const a = mtx_perspective(40, width / height, 0.1, 100.0);
+  const a = mtx_perspective(40, width / height, 0.1, 100);
   const b = mtx_translation(0, 0, -5.5);
   const c = mtx_rotation_x(state.elapsed * 0.001);
   const d = mtx_rotation_y(state.elapsed * 0.001);
@@ -307,7 +393,7 @@ function mtx_inverse (m) {
   inv[11] = -m[0] * m[5]  * m[11] + m[0]  * m[7]  * m[9]  + m[4]  * m[1] * m[11] - m[4] * m[3] * m[9]  - m[8]  * m[1] * m[7]  + m[8]  * m[3] * m[5];
   inv[15] =  m[0] * m[5]  * m[10] - m[0]  * m[6]  * m[9]  - m[4]  * m[1] * m[10] + m[4] * m[2] * m[9]  + m[8]  * m[1] * m[6]  - m[8]  * m[2] * m[5];
 
-  det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+  let det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
 
   if (det == 0) {
     console.log("Error: Non-invertible matrix");
@@ -315,7 +401,7 @@ function mtx_inverse (m) {
     return mtx_zero();
   }
 
-  det = 1.0 / det;
+  det = 1 / det;
 
   for (let i = 0; i < 16; i++) {
     inv[i] *= det;
@@ -358,7 +444,7 @@ function mtx_rotation_y (r) {
 }
 
 function mtx_perspective (fov_y, aspect, z_near, z_far) {
-  const top = z_near * Math.tan(fov_y * Math.PI / 360.0);
+  const top = z_near * Math.tan(fov_y * Math.PI / 360);
   const bot = -top;
   const left = bot * aspect;
   const right = top * aspect;
@@ -371,10 +457,10 @@ function mtx_perspective (fov_y, aspect, z_near, z_far) {
   const D = -2 * z_far * z_near / (z_far - z_near);
 
   return [
-    X   , 0.0 , 0.0 ,  0.0,
-    0.0 , Y   , 0.0 ,  0.0,
-    A   , B   , C   , -1.0,
-    0.0 , 0.0 , D   ,  0.0
+    X, 0, 0,  0,
+    0, Y, 0,  0,
+    A, B, C, -1,
+    0, 0, D,  0,
   ];
 }
 
