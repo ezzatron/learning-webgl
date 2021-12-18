@@ -118,9 +118,9 @@ async function main () {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
   // Init textures
-  const tex_depth = load_texture(gl, "bump_depth.png")
-  const tex_diffuse = load_texture(gl, "bump_diffuse.png")
-  const tex_norm = load_texture(gl, "bump_normal.png")
+  const tex_depth = load_texture(gl, "bump_depth")
+  const tex_diffuse = load_texture(gl, "bump_diffuse")
+  const tex_norm = load_texture(gl, "bump_normal")
 
   const state = {
     attr_bitang,
@@ -214,7 +214,7 @@ function get_shader (gl, src, is_frag) {
   return shader;
 }
 
-function load_texture (gl, src) {
+function load_texture (gl, id) {
   const tex = gl.createTexture();
 
   gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -229,7 +229,7 @@ function load_texture (gl, src) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   }
 
-  img.src = src;
+  img.src = document.getElementById(id).href;
 
   return tex;
 }
