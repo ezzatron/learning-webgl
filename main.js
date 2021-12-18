@@ -155,9 +155,9 @@ function update_and_render (canvas, gl, pgm, state) {
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const a = mtx_perspective(45, 680.0/382.0, 0.1, 100.0);
-  const b = mtx_translation(0,0,-4.5);
-  const c = mtx_rotation_x(0.4);
+  const a = mtx_perspective(40, width / height, 0.1, 100.0);
+  const b = mtx_translation(0, 0, -5.5);
+  const c = mtx_rotation_x(state.time * 0.0075);
   const d = mtx_rotation_y(state.time * 0.0075);
 
   const model = mtx_mul(mtx_mul(b, c), d);
