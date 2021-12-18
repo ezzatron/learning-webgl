@@ -132,14 +132,21 @@ async function main () {
     tex_depth,
     tex_diffuse,
     tex_norm,
-    time: 0,
     vbo_bitang,
     vbo_pos,
     vbo_tang,
     vbo_uv,
   }
 
-  setInterval(update_and_render.bind(null, canvas, gl, pgm, state), 15);
+  const startTime = Date.now();
+
+  function tick () {
+    state.elapsed = Date.now() - startTime;
+    update_and_render(canvas, gl, pgm, state);
+    requestAnimationFrame(tick);
+  }
+
+  tick();
 }
 
 function update_and_render (canvas, gl, pgm, state) {
@@ -151,14 +158,12 @@ function update_and_render (canvas, gl, pgm, state) {
     gl.viewport(0, 0, clientWidth, clientHeight);
   }
 
-  state.time++;
-
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   const a = mtx_perspective(40, width / height, 0.1, 100.0);
   const b = mtx_translation(0, 0, -5.5);
-  const c = mtx_rotation_x(state.time * 0.0075);
-  const d = mtx_rotation_y(state.time * 0.0075);
+  const c = mtx_rotation_x(state.elapsed * 0.001);
+  const d = mtx_rotation_y(state.elapsed * 0.001);
 
   const model = mtx_mul(mtx_mul(b, c), d);
 
