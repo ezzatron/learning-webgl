@@ -47,42 +47,44 @@ async function main () {
   const vbo_pos = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vbo_pos);
 
+  const thickness = 0.1
+
   const verts = [
     // Front
-    -1, -1,  1,
-     1,  1,  1,
-    -1,  1,  1,
-     1, -1,  1,
+    -1, -1,  thickness,
+     1,  1,  thickness,
+    -1,  1,  thickness,
+     1, -1,  thickness,
 
     // Back
-    -1, -1, -1,
-     1,  1, -1,
-    -1,  1, -1,
-     1, -1, -1,
+    -1, -1, -thickness,
+     1,  1, -thickness,
+    -1,  1, -thickness,
+     1, -1, -thickness,
 
     // Right
-     1, -1, -1,
-     1,  1,  1,
-     1, -1,  1,
-     1,  1, -1,
+     1, -1, -thickness,
+     1,  1,  thickness,
+     1, -1,  thickness,
+     1,  1, -thickness,
 
     // Left
-    -1, -1, -1,
-    -1,  1,  1,
-    -1, -1,  1,
-    -1,  1, -1,
+    -1, -1, -thickness,
+    -1,  1,  thickness,
+    -1, -1,  thickness,
+    -1,  1, -thickness,
 
     // Top
-    -1,  1, -1,
-     1,  1,  1,
-    -1,  1,  1,
-     1,  1, -1,
+    -1,  1, -thickness,
+     1,  1,  thickness,
+    -1,  1,  thickness,
+     1,  1, -thickness,
 
     // Bottom
-    -1, -1, -1,
-     1, -1,  1,
-    -1, -1,  1,
-     1, -1, -1,
+    -1, -1, -thickness,
+     1, -1,  thickness,
+    -1, -1,  thickness,
+     1, -1, -thickness,
   ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
@@ -251,8 +253,8 @@ function update_and_render (canvas, gl, pgm, state) {
 
   const a = mtx_perspective(40, width / height, 0.1, 100);
   const b = mtx_translation(0, 0, -5.5);
-  const c = mtx_rotation_x(state.elapsed * 0.001);
-  const d = mtx_rotation_y(state.elapsed * 0.001);
+  const c = mtx_rotation_x(0.5);
+  const d = mtx_rotation_y(state.elapsed * 0.0005);
 
   const model = mtx_mul(mtx_mul(b, c), d);
 
