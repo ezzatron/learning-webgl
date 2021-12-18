@@ -334,20 +334,26 @@ function mtx_translation (x, y, z) {
 }
 
 function mtx_rotation_x (r) {
+  const c = Math.cos(r)
+  const s = Math.sin(r)
+
   return [
-    1, 0,            0          , 0,
-    0,  Math.cos(r), Math.sin(r), 0,
-    0, -Math.sin(r), Math.cos(r), 0,
-    0, 0,            0          , 1
+    1, 0,  0, 0,
+    0, c,  s, 0,
+    0, -s, c, 0,
+    0, 0,  0, 1,
   ];
 }
 
 function mtx_rotation_y (r) {
+  const c = Math.cos(r)
+  const s = Math.sin(r)
+
   return [
-    Math.cos(r), 0, -Math.sin(r), 0,
-    0          , 1,            0, 0,
-    Math.sin(r), 0,  Math.cos(r), 0,
-    0          , 0,            0, 1
+    c, 0, -s, 0,
+    0, 1, 0,  0,
+    s, 0, c,  0,
+    0, 0, 0,  1,
   ];
 }
 
