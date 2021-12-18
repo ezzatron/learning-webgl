@@ -286,6 +286,7 @@ function update_and_render (canvas, gl, pgm, state) {
   gl.bindBuffer(gl.ARRAY_BUFFER, state.vbo_uv);
   gl.vertexAttribPointer(state.attr_uv, 2, gl.FLOAT, false, 0, 0);
 
+  gl.uniform1f(gl.getUniformLocation(pgm, "enabled"), 1);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, state.index_buffer);
   gl.drawElements(gl.TRIANGLES, state.indices.length, gl.UNSIGNED_SHORT, 0);
 }

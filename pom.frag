@@ -1,5 +1,7 @@
 precision highp float;
 
+uniform float enabled;
+
 uniform sampler2D tex_norm;
 uniform sampler2D tex_diffuse;
 uniform sampler2D tex_depth;
@@ -44,14 +46,17 @@ void main(void)
   vec3 light_dir = normalize(ts_light_pos - ts_frag_pos);
   vec3 view_dir = normalize(ts_view_pos - ts_frag_pos);
 
-  // Only perturb the texture coordinates if a parallax technique is selected
-  vec2 uv = parallax_uv(frag_uv, view_dir);
-
+  vec2 uv = (enabled > 0.0) ? parallax_uv(frag_uv, view_dir) : frag_uv;
   vec3 albedo = texture2D(tex_diffuse, uv).rgb;
   vec3 ambient = 0.3 * albedo;
 
-  // Normal mapping
-  vec3 norm = normalize(texture2D(tex_norm, uv).rgb * 2.0 - 1.0);
-  float diffuse = max(dot(light_dir, norm), 0.0);
-  gl_FragColor = vec4(diffuse * albedo + ambient, 1.0);
+  if (enabled > 0.0) {
+    vec3 norm = normalize(texture2D(tex_norm, uv).rgb * 2.0 - 1.0);
+    float diffuse = max(dot(light_dir, norm), 0.0);
+    gl_FragColor = vec4(diffuse * albedo + ambient, 1.0);
+  } else {
+    vec3 norm = vec3(0, 0, 1);
+    float diffuse = max(dot(light_dir, norm), 0.0);
+    gl_FragColor = vec4(diffuse * albedo + ambient, 1.0);
+  }
 }
