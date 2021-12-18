@@ -1,7 +1,5 @@
 // Original code by Apoorva Joshi (https://apoorvaj.io/exploring-bump-mapping-with-webgl/)
 
-debugger
-
 var canvas;
 var gl;
 var time_paused = false;
