@@ -128,7 +128,7 @@ void main(void)
 `;
 
 window.onload = function(e) {
-    canvas = document.getElementById("gl_canvas");
+    canvas = document.getElementsByTagName("canvas")[0];
 
     // Init WebGL context
     {
@@ -305,21 +305,18 @@ function update_and_render() {
     }
 
     {
-        // var scale = 0.01 * parseFloat(document.getElementById("scale").value);
         var scale = 0.1;
         var uni = gl.getUniformLocation(pgm, "depth_scale");
         gl.uniform1f(uni, scale);
     }
 
     {
-        // var steps = parseFloat(document.getElementById("steps").value);
         var steps = 32;
         var uni = gl.getUniformLocation(pgm, "num_layers");
         gl.uniform1f(uni, steps);
     }
 
     {
-        // var show_tex = document.getElementById('show_tex').checked;
         var show_tex = true;
         var uni = gl.getUniformLocation(pgm, "show_tex");
         gl.uniform1i(uni, show_tex);
