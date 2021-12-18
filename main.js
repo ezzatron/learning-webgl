@@ -1,5 +1,11 @@
 // Original code by Apoorva Joshi (https://apoorvaj.io/exploring-bump-mapping-with-webgl/)
 
+if (document.readyState !== 'loading') {
+  main();
+} else {
+  document.addEventListener('DOMContentLoaded', main);
+}
+
 var time;
 
 var vbo_pos, attr_pos;
@@ -123,7 +129,7 @@ void main(void)
 }
 `;
 
-window.onload = function (e) {
+function main () {
   const canvas = document.getElementsByTagName("canvas")[0];
   const gl = canvas.getContext("webgl");
 
