@@ -12,7 +12,6 @@ async function main () {
   const gl = canvas.getContext("webgl");
 
   // Init GL flags
-  gl.clearColor(...[0, 0, 0].map(channel => channel / 255), 1);
   gl.clearDepth(1);
   gl.enable(gl.DEPTH_TEST);
   gl.depthFunc(gl.LEQUAL);
