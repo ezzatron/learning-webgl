@@ -250,21 +250,18 @@ async function main () {
 }
 
 function update_and_render (canvas, gl, pgm, state) {
-  const targetWidth = window.outerWidth;
-  const targetHeight = window.outerHeight;
-  const {width, height} = canvas;
+  const {clientWidth, clientHeight, width, height} = canvas;
+  const aspect = clientWidth / clientHeight;
 
-  if (width !== targetWidth || height !== targetHeight) {
-    canvas.width  = targetWidth;
-    canvas.height = targetHeight;
-    gl.viewport(0, 0, targetWidth, targetHeight);
+  if (width !== clientWidth || height !== clientHeight) {
+    canvas.width  = clientWidth;
+    canvas.height = clientHeight;
+    gl.viewport(0, 0, clientWidth, clientHeight);
   }
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const aspect = width / height
-  const fov_y = aspect > 1 ? 40 : 40 - ((aspect - 1) * 40)
-  const a = mtx_perspective(fov_y, aspect, 0.1, 100);
+  const a = mtx_perspective(40, aspect, 0.1, 100);
   const b = mtx_translation(0, 0, -5.5);
   const c = mtx_rotation_x(0.5);
   const d = mtx_rotation_y(state.elapsed * 0.0005);
